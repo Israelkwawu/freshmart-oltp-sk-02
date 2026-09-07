@@ -1,3 +1,6 @@
+DROP TABLE IF EXISTS order_lines, orders, products, stores, customers;
+-- ... then all CREATE TABLE and INSERT statements ...
+
 -- FreshMart OLTP schema (simplified slice)
 CREATE TABLE customers (
     customer_id   SERIAL PRIMARY KEY,
