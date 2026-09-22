@@ -22,11 +22,11 @@ https://github.com/AmaliTech-Training-Academy/DE-T-Shaped-Program/blob/main/SK-0
 
 Install the following:
 
-* PostgreSQL
-* `psql` command-line client
-* Git
-* Git Bash
-* A PostgreSQL database named `freshmart`
+- PostgreSQL
+- `psql` command-line client
+- Git
+- Git Bash
+- A PostgreSQL database named `freshmart`
 
 Check PostgreSQL:
 
@@ -59,11 +59,20 @@ dataeng/
     │
     ├── sql/
     │   ├── 01_create_oltp.sql
-    │   ├── 02_queries.sql
-    │   └── ...
-    │
-    └── ...
+    │   ├── 02_joins_windows.sql
+    │   ├── 03_tuning.sql
+    │   ├── 04_star_schema.sql
+    │   ├── 05_etl.sql
+    │   └── 06_hardening.sql
+    ├── logs/
+    │   └── .gitkeep
+    ├── notes.md
+    └── connection_info.md
 ```
+
+All executable lab scripts live in `sql/`; command output and validation logs
+live in `logs/`. This is the project-local equivalent of the separate Lab 06
+folder suggested by the upstream guide.
 
 ---
 
@@ -410,11 +419,11 @@ The exercises use a fictional grocery company called **FreshMart**.
 
 The database represents an operational OLTP system containing:
 
-* Customers
-* Stores
-* Products
-* Orders
-* Order Lines
+- Customers
+- Stores
+- Products
+- Orders
+- Order Lines
 
 Relationship:
 
@@ -436,33 +445,75 @@ Order Lines
 
 ---
 
-# 📚 Lab 01 — SQL Foundations
+# Lab Sequence
+
+Run the scripts in this order from `C:\dataeng`:
+
+```bash
+psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/01_create_oltp.sql
+psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/02_joins_windows.sql
+psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/03_tuning.sql
+psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/04_star_schema.sql
+psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/05_etl.sql
+psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/06_hardening.sql
+```
+
+Lab 01 resets and reloads the OLTP source. Labs 03-06 should be run after the
+preceding lab has completed. Lab 05 and the DDL portions of later scripts are
+designed for reruns; use `ON_ERROR_STOP=1` in automation.
+
+## Lab Artifacts
+
+| Script                 | Focus                                                         |
+| ---------------------- | ------------------------------------------------------------- |
+| `01_create_oltp.sql`   | FreshMart source tables and generated data                    |
+| `02_joins_windows.sql` | Joins, aggregation, CTEs, and window functions                |
+| `03_tuning.sql`        | EXPLAIN, indexes, statistics, and a materialized view         |
+| `04_star_schema.sql`   | `dw` dimensions, SCD2 plumbing, and `fact_sales`              |
+| `05_etl.sql`           | Date/dimension loads, SCD2, HWM, idempotent facts, audit log  |
+| `06_hardening.sql`     | Constraints, dead letters, staging validation, quality checks |
+
+## Verification Queries
+
+```sql
+SELECT COUNT(*) FROM public.customers;
+SELECT COUNT(*) FROM public.orders;
+SELECT COUNT(*) FROM public.order_lines;
+SELECT COUNT(*) FROM dw.fact_sales;
+SELECT * FROM dw.etl_control;
+```
+
+The expected source shape is 8 stores, 25 products, 2,000 customers, 50,000
+orders, and roughly 120,000-160,000 order lines. Random data means exact
+counts and revenue vary between clean Lab 01 runs.
+
+# Lab 01 - SQL Foundations
 
 Topics covered:
 
-* PostgreSQL environment setup
-* Database and table creation
-* DDL and DML
-* Primary keys
-* Foreign keys
-* Constraints
-* `SELECT`
-* `WHERE`
-* `ORDER BY`
-* `LIMIT`
-* `IN`
-* `BETWEEN`
-* `LIKE`
-* `ILIKE`
-* `NULL`
-* `COALESCE`
-* `CASE`
-* Type casting
-* `EXTRACT`
-* Date and timestamp filtering
-* SQL logical execution order
-* `generate_series()`
-* Idempotent SQL scripts
+- PostgreSQL environment setup
+- Database and table creation
+- DDL and DML
+- Primary keys
+- Foreign keys
+- Constraints
+- `SELECT`
+- `WHERE`
+- `ORDER BY`
+- `LIMIT`
+- `IN`
+- `BETWEEN`
+- `LIKE`
+- `ILIKE`
+- `NULL`
+- `COALESCE`
+- `CASE`
+- Type casting
+- `EXTRACT`
+- Date and timestamp filtering
+- SQL logical execution order
+- `generate_series()`
+- Idempotent SQL scripts
 
 ---
 
@@ -665,22 +716,22 @@ git push origin main
 
 After completing the SQL Foundations lab, I should be able to:
 
-* Create PostgreSQL databases and tables
-* Define primary and foreign keys
-* Apply database constraints
-* Insert and generate test data
-* Query relational data
-* Filter and sort records
-* Work correctly with `NULL`
-* Use `COALESCE`
-* Use `CASE`
-* Work with dates and timestamps
-* Understand SQL execution order
-* Write reusable SQL scripts
-* Create idempotent database setup scripts
-* Execute SQL from the command line
-* Verify database objects and data
-* Use Git to track SQL development
+- Create PostgreSQL databases and tables
+- Define primary and foreign keys
+- Apply database constraints
+- Insert and generate test data
+- Query relational data
+- Filter and sort records
+- Work correctly with `NULL`
+- Use `COALESCE`
+- Use `CASE`
+- Work with dates and timestamps
+- Understand SQL execution order
+- Write reusable SQL scripts
+- Create idempotent database setup scripts
+- Execute SQL from the command line
+- Verify database objects and data
+- Use Git to track SQL development
 
 ---
 
@@ -688,13 +739,13 @@ After completing the SQL Foundations lab, I should be able to:
 
 ## SQL & Data Modeling Specialist
 
-* [x] PostgreSQL environment setup
-* [x] Lab 01 — SQL Foundations
-* [ ] Lab 02
-* [ ] Lab 03
-* [ ] Lab 04
-* [ ] Lab 05
-* [ ] Lab 06
+- [x] PostgreSQL environment setup
+- [x] Lab 01 - SQL Foundations
+- [x] Lab 02 - Joins, Aggregations, and Window Functions
+- [x] Lab 03 - Advanced SQL and Query Tuning
+- [x] Lab 04 - Dimensional Modeling
+- [x] Lab 05 - Warehouse SQL ETL
+- [x] Lab 06 - Data Quality and Production Hardening
 
 ---
 
