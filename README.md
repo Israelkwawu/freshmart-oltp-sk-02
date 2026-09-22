@@ -4,7 +4,7 @@ This repository contains my practical work and exercises for the **AmaliTech Dat
 
 The work is based on the official AmaliTech training labs and focuses on building practical SQL and data modeling skills using PostgreSQL.
 
-## 📚 Course Reference
+## Course Reference
 
 Official training repository:
 
@@ -18,7 +18,7 @@ https://github.com/AmaliTech-Training-Academy/DE-T-Shaped-Program/blob/main/SK-0
 
 ---
 
-# 🛠️ Prerequisites
+# Prerequisites
 
 Install the following:
 
@@ -48,7 +48,7 @@ git --version
 
 ---
 
-# 📁 Project Structure
+# Project Structure
 
 ```text
 dataeng/
@@ -76,7 +76,7 @@ folder suggested by the upstream guide.
 
 ---
 
-# 🗄️ Database Setup
+# Database Setup
 
 The labs use a PostgreSQL database called `freshmart`.
 
@@ -102,7 +102,7 @@ freshmart
 
 ---
 
-# 🔌 Connect to the Database
+# Connect to the Database
 
 Connect using:
 
@@ -120,7 +120,7 @@ freshmart=#
 
 ---
 
-# ▶️ Running SQL Scripts
+# Running SQL Scripts
 
 SQL scripts can be executed directly from Git Bash using `psql`.
 
@@ -162,7 +162,7 @@ Then execute:
 
 ---
 
-# 🔍 Verify the Script
+# Verify the Script
 
 After running the setup script, connect to the database:
 
@@ -188,7 +188,7 @@ order_lines
 
 ---
 
-# 📊 Check Table Structure
+# Check Table Structure
 
 To inspect a table:
 
@@ -210,7 +210,7 @@ Example:
 
 ---
 
-# 🔢 Check Row Counts
+# Check Row Counts
 
 Run:
 
@@ -231,7 +231,7 @@ SELECT
 
 ---
 
-# 🔎 Run Queries
+# Run Queries
 
 You can execute queries directly from the PostgreSQL terminal.
 
@@ -270,7 +270,7 @@ WHERE country IN ('USA', 'UK');
 
 ---
 
-# 🚀 Run SQL Without Entering PostgreSQL
+# Run SQL Without Entering PostgreSQL
 
 You can execute a query directly from Git Bash.
 
@@ -290,7 +290,7 @@ This is useful for quick database checks and automation.
 
 ---
 
-# 📄 Run Multiple SQL Scripts
+# Run Multiple SQL Scripts
 
 If several scripts need to be executed:
 
@@ -307,7 +307,7 @@ psql -U postgres -d freshmart -f ./sk02/sql/setup.sql
 
 ---
 
-# 🔄 Rerun / Reset the Database
+# Rerun / Reset the Database
 
 If the SQL script is designed to be idempotent, it can safely be executed multiple times:
 
@@ -337,11 +337,11 @@ Then run the setup script:
 psql -U postgres -d freshmart -f ./sk02/sql/01_create_oltp.sql
 ```
 
-> ⚠️ Dropping the database permanently removes all data inside it.
+> Warning: Dropping the database permanently removes all data inside it.
 
 ---
 
-# 🧪 Useful PostgreSQL Commands
+# Useful PostgreSQL Commands
 
 These commands are available inside `psql`.
 
@@ -359,7 +359,7 @@ These commands are available inside `psql`.
 
 ---
 
-# 🧹 Clear the Terminal
+# Clear the Terminal
 
 Inside `psql`:
 
@@ -381,7 +381,7 @@ cls
 
 ---
 
-# 💾 Export Query Results
+# Export Query Results
 
 Export a query result to CSV:
 
@@ -397,7 +397,7 @@ psql -U postgres -d freshmart -c "SELECT first_name, country, score FROM custome
 
 ---
 
-# 📥 Execute SQL From a File
+# Execute SQL From a File
 
 For a SQL file containing queries:
 
@@ -413,7 +413,7 @@ psql -U postgres -d freshmart -f ./sk02/sql/queries.sql > output.txt
 
 ---
 
-# 🛒 FreshMart Database
+# FreshMart Database
 
 The exercises use a fictional grocery company called **FreshMart**.
 
@@ -517,7 +517,7 @@ Topics covered:
 
 ---
 
-# 🧠 SQL Logical Execution Order
+# SQL Logical Execution Order
 
 SQL is written in:
 
@@ -547,7 +547,7 @@ This explains why a `SELECT` alias can normally be used in `ORDER BY` but not in
 
 ---
 
-# 📅 Safe Date Filtering
+# Safe Date Filtering
 
 For timestamp columns, use a half-open date range:
 
@@ -562,7 +562,7 @@ This includes all timestamps from January 1 through January 31 without accidenta
 
 ---
 
-# ⚠️ Working With NULL
+# Working With NULL
 
 Incorrect:
 
@@ -591,7 +591,7 @@ FROM customers;
 
 ---
 
-# 💰 Working With Money
+# Working With Money
 
 Use `NUMERIC` for financial values:
 
@@ -603,7 +603,7 @@ This provides exact decimal arithmetic and avoids many floating-point precision 
 
 ---
 
-# 🔄 Git Workflow
+# Git Workflow
 
 Check the current branch:
 
@@ -649,7 +649,7 @@ git log --oneline
 
 ---
 
-# 📝 Recommended Workflow for Each Lab
+# Recommended Workflow for Each Lab
 
 ### 1. Pull the latest repository changes
 
@@ -712,7 +712,7 @@ git push origin main
 
 ---
 
-# 📌 Learning Outcomes
+# Learning Outcomes
 
 After completing the SQL Foundations lab, I should be able to:
 
@@ -735,7 +735,7 @@ After completing the SQL Foundations lab, I should be able to:
 
 ---
 
-# 🚧 Progress
+# Progress
 
 ## SQL & Data Modeling Specialist
 
@@ -749,7 +749,7 @@ After completing the SQL Foundations lab, I should be able to:
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Israel Kwawu**
 
