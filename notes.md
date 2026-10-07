@@ -39,6 +39,18 @@ Prevent it by pre-aggregating to one row per order in a CTE, then joining that r
 - SCD2 changes use `IS DISTINCT FROM` so NULL changes are detected.
 - Fact-to-customer joins use validity dates to preserve the customer context at sale time.
 
+## Guided-lab extensions
+
+FreshMart's fiscal year starts on 1 February, so January belongs to the prior fiscal year and to fiscal quarter 4. `dw.dim_date` carries that calendar plus New Year's Day, Independence Day (4 July), and Christmas.
+
+`dw.dim_promotion` is Type 1. `promotion_key = -1` means "No Promotion". The OLTP slice has no promotion id, so every fact row points there instead of using NULL.
+
+`dw.fact_sales` stays unpartitioned because its idempotency key is `order_line_id` alone. A table partitioned by `date_key` cannot enforce that uniqueness. `dw.fact_sales_partitioned` is the yearly copy used to show partition pruning.
+
+`dw.mv_daily_store_category_sales` is current as of its last refresh, which belongs after the nightly fact load.
+
+An order-grain fact would repeat line measures such as product revenue once per line, so a product total would be multiplied by the number of lines on the order. The `-1` promotion row keeps every fact joinable without a NULL check. A late order still finds the customer version whose `valid_from`/`valid_to` covered the original sale date. Adding `product_name` to the dashboard view makes drill-through possible and makes the view much larger, so refresh time and storage go up. If analysis is mostly by store, partition `fact_sales` by `store_key` instead of year so store filters prune the other stores.
+
 ## Lab 06 quality notes
 
 - Row-level constraints protect the warehouse schema.

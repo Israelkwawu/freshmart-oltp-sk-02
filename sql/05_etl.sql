@@ -26,6 +26,17 @@ CREATE TABLE IF NOT EXISTS etl.run_audit (
     status TEXT NOT NULL DEFAULT 'running' CHECK (status IN ('running', 'success', 'failed'))
 );
 -- The date dimension is static and can be populated repeatedly.
+-- FreshMart's fiscal year starts on 1 February.
+ALTER TABLE dw.dim_date
+ADD COLUMN IF NOT EXISTS month_short TEXT,
+    ADD COLUMN IF NOT EXISTS quarter_name TEXT,
+    ADD COLUMN IF NOT EXISTS year_month TEXT,
+    ADD COLUMN IF NOT EXISTS day_of_year INT,
+    ADD COLUMN IF NOT EXISTS week_of_year INT,
+    ADD COLUMN IF NOT EXISTS fiscal_year INT,
+    ADD COLUMN IF NOT EXISTS fiscal_quarter INT,
+    ADD COLUMN IF NOT EXISTS is_holiday BOOLEAN NOT NULL DEFAULT FALSE,
+    ADD COLUMN IF NOT EXISTS holiday_name TEXT;
 INSERT INTO dw.dim_date (
         date_key,
         full_date,
@@ -33,10 +44,18 @@ INSERT INTO dw.dim_date (
         quarter,
         month,
         month_name,
+        month_short,
+        quarter_name,
+        year_month,
         day_of_month,
+        day_of_year,
+        week_of_year,
         day_of_week,
         day_name,
-        is_weekend
+        is_weekend,
+        fiscal_year,
+        fiscal_quarter,
+        is_holiday
     )
 SELECT TO_CHAR(d, 'YYYYMMDD')::int,
     d::date,
@@ -53,8 +72,22 @@ SELECT TO_CHAR(d, 'YYYYMMDD')::int,
         FROM d
     )::int,
     TO_CHAR(d, 'FMMonth'),
+    TO_CHAR(d, 'Mon'),
+    'Q' || EXTRACT(
+        QUARTER
+        FROM d
+    )::text,
+    TO_CHAR(d, 'YYYY-MM'),
     EXTRACT(
         DAY
+        FROM d
+    )::int,
+    EXTRACT(
+        DOY
+        FROM d
+    )::int,
+    EXTRACT(
+        WEEK
         FROM d
     )::int,
     EXTRACT(
@@ -65,12 +98,88 @@ SELECT TO_CHAR(d, 'YYYYMMDD')::int,
     EXTRACT(
         ISODOW
         FROM d
-    )::int IN (6, 7)
+    )::int IN (6, 7),
+    CASE
+        WHEN EXTRACT(
+            MONTH
+            FROM d
+        ) >= 2 THEN EXTRACT(
+            YEAR
+            FROM d
+        )::int
+        ELSE EXTRACT(
+            YEAR
+            FROM d
+        )::int - 1
+    END,
+    CASE
+        WHEN EXTRACT(
+            MONTH
+            FROM d
+        ) IN (2, 3, 4) THEN 1
+        WHEN EXTRACT(
+            MONTH
+            FROM d
+        ) IN (5, 6, 7) THEN 2
+        WHEN EXTRACT(
+            MONTH
+            FROM d
+        ) IN (8, 9, 10) THEN 3
+        ELSE 4
+    END,
+    FALSE
 FROM generate_series(
         DATE '2023-01-01',
         DATE '2032-12-31',
         INTERVAL '1 day'
     ) AS d ON CONFLICT (date_key) DO NOTHING;
+UPDATE dw.dim_date
+SET month_short = TO_CHAR(full_date, 'Mon'),
+    quarter_name = 'Q' || quarter::text,
+    year_month = TO_CHAR(full_date, 'YYYY-MM'),
+    day_of_year = EXTRACT(
+        DOY
+        FROM full_date
+    )::int,
+    week_of_year = EXTRACT(
+        WEEK
+        FROM full_date
+    )::int,
+    fiscal_year = CASE
+        WHEN month >= 2 THEN year
+        ELSE year - 1
+    END,
+    fiscal_quarter = CASE
+        WHEN month IN (2, 3, 4) THEN 1
+        WHEN month IN (5, 6, 7) THEN 2
+        WHEN month IN (8, 9, 10) THEN 3
+        ELSE 4
+    END
+WHERE fiscal_year IS NULL
+    OR month_short IS NULL;
+UPDATE dw.dim_date
+SET is_holiday = TRUE,
+    holiday_name = 'New Year''s Day'
+WHERE month = 1
+    AND day_of_month = 1;
+UPDATE dw.dim_date
+SET is_holiday = TRUE,
+    holiday_name = 'Independence Day'
+WHERE month = 7
+    AND day_of_month = 4;
+UPDATE dw.dim_date
+SET is_holiday = TRUE,
+    holiday_name = 'Christmas Day'
+WHERE month = 12
+    AND day_of_month = 25;
+ALTER TABLE dw.dim_date
+ALTER COLUMN month_short SET NOT NULL,
+    ALTER COLUMN quarter_name SET NOT NULL,
+    ALTER COLUMN year_month SET NOT NULL,
+    ALTER COLUMN day_of_year SET NOT NULL,
+    ALTER COLUMN week_of_year SET NOT NULL,
+    ALTER COLUMN fiscal_year SET NOT NULL,
+    ALTER COLUMN fiscal_quarter SET NOT NULL;
 -- Type 1 dimensions and the initial Type 2 customer versions.
 INSERT INTO dw.dim_store (store_id, store_name, region)
 SELECT s.store_id,

@@ -63,7 +63,8 @@ dataeng/
     │   ├── 03_tuning.sql
     │   ├── 04_star_schema.sql
     │   ├── 05_etl.sql
-    │   └── 06_hardening.sql
+    │   ├── 06_hardening.sql
+    │   └── 07_analytics.sql
     ├── logs/
     │   └── .gitkeep
     ├── notes.md
@@ -456,6 +457,7 @@ psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/03_tuning.sql
 psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/04_star_schema.sql
 psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/05_etl.sql
 psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/06_hardening.sql
+psql -U postgres -d freshmart -v ON_ERROR_STOP=1 -f ./sk02/sql/07_analytics.sql
 ```
 
 Lab 01 resets and reloads the OLTP source. Labs 03-06 should be run after the
@@ -472,6 +474,7 @@ designed for reruns; use `ON_ERROR_STOP=1` in automation.
 | `04_star_schema.sql`   | `dw` dimensions, SCD2 plumbing, and `fact_sales`              |
 | `05_etl.sql`           | Date/dimension loads, SCD2, HWM, idempotent facts, audit log  |
 | `06_hardening.sql`     | Constraints, dead letters, staging validation, quality checks |
+| `07_analytics.sql`     | Fiscal calendar, promotions, warehouse reports, partitioning  |
 
 ## Verification Queries
 
@@ -746,6 +749,7 @@ After completing the SQL Foundations lab, I should be able to:
 - [x] Lab 04 - Dimensional Modeling
 - [x] Lab 05 - Warehouse SQL ETL
 - [x] Lab 06 - Data Quality and Production Hardening
+- [x] Guided lab analytics - fiscal calendar, promotions, reports, partitioning
 
 ---
 
